@@ -1,7 +1,5 @@
 {
-  "item.lifesteal.heart_dust": "Heart Dust",
-  "item.lifesteal.heart_crystal": "Heart Crystal",
-  "item.lifesteal.heart": "Heart",
-
-  "block.lifesteal.heart_dust_ore": "Heart Dust Ore"
+  "item.lifesteal.echo": "Echo",
+  "item.lifesteal.warden_horns": "Warden Horns",
+  "item.lifesteal.elder_guardian_skin": "Elder Guardian Skin"
 }
