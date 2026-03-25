@@ -1,7 +1,6 @@
 package me.modernadventurer.lifesteal;
 
 import me.modernadventurer.lifesteal.commands.CommandRegistry;
-import me.modernadventurer.lifesteal.commands.command.pvpMode.pvp;
 import me.modernadventurer.lifesteal.items.Echo;
 import me.modernadventurer.lifesteal.items.ElderGardianSkin;
 import me.modernadventurer.lifesteal.items.WardenHorns;

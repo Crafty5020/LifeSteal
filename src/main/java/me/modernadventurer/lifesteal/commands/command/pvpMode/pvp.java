@@ -7,7 +7,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.world.rule.GameRules;
-import org.apache.logging.log4j.core.jmx.Server;
+
 
 public class pvp {
     public static int pvpOn(CommandContext<ServerCommandSource> ctx) {
@@ -23,6 +23,7 @@ public class pvp {
     public static int pvpOff(CommandContext<ServerCommandSource> ctx) {
         Loader.pvpEnabled = false;
 
+        ctx.getSource().getWorld().getGameRules().setValue(GameRules.PVP, false, ctx.getSource().getServer());
         ctx.getSource().getServer().getPlayerManager().broadcast(
                 Text.literal("§cPvP Disabled"), false
         );

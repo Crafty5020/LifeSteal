@@ -4,6 +4,7 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import me.modernadventurer.lifesteal.commands.command.AddHearts;
 import me.modernadventurer.lifesteal.commands.command.GIveHearts.GiveHearts;
 import me.modernadventurer.lifesteal.commands.command.RemoveHearts;
+import me.modernadventurer.lifesteal.commands.command.pvpMode.pvp;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.permission.Permission;
 import me.modernadventurer.lifesteal.commands.command.GiveAllItems;
@@ -55,12 +56,22 @@ public class CommandRegistry {
                 )
                 .then(CommandManager.literal("pvp")
                         .requires(source -> source.getPermissions().hasPermission(new Permission.Level(PermissionLevel.GAMEMASTERS)))
-                        .then(CommandManager.literal("on"))
-                        .then(CommandManager.literal("off"))
+                        .then(CommandManager.literal("on")
+                                .executes(pvp::pvpOn)
+                        )
+                        .then(CommandManager.literal("off")
+                                .executes(pvp::pvpOff)
+                        )
                         .then(CommandManager.literal("timer")
-                                .then(CommandManager.literal("on"))
-                                .then(CommandManager.literal("off"))
-                                .then(CommandManager.literal("pause"))
+                                .then(CommandManager.literal("on")
+                                        .executes(pvp::pvpTimerOn)
+                                )
+                                .then(CommandManager.literal("off")
+                                        .executes(pvp::pvpTimerOff)
+                                )
+                                .then(CommandManager.literal("pause")
+                                        .executes(pvp::pvpTimerPause)
+                                )
                         )
                 )
         ));
