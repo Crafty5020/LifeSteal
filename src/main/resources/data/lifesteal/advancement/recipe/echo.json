@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "lifesteal:echo"
+    ]
+  },
+  "criteria": {
+    "has_warden_horn": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "lifesteal:warden_horns"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "lifesteal:echo"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_warden_horn",
+      "has_the_recipe"
+    ]
+  ]
+}

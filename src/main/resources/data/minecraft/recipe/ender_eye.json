@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:ender_pearl",
+    "minecraft:blaze_powder",
+    "minecraft:netherite_ingot",
+    "minecraft:enchanted_golden_apple",
+    "minecraft:heavy_core",
+    "minecraft:totem_of_undying",
+    "minecraft:nether_star",
+    "lifesteal:echo",
+    "lifesteal:elder_guardian_skin"
+  ],
+  "result": {
+    "count": 16,
+    "id": "minecraft:ender_eye"
+  }
+}
