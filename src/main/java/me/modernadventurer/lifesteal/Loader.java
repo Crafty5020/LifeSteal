@@ -1,6 +1,7 @@
 package me.modernadventurer.lifesteal;
 
 import me.modernadventurer.lifesteal.commands.CommandRegistry;
+import me.modernadventurer.lifesteal.commands.command.pvpMode.pvp;
 import me.modernadventurer.lifesteal.items.Echo;
 import me.modernadventurer.lifesteal.items.ElderGardianSkin;
 import me.modernadventurer.lifesteal.items.WardenHorns;
@@ -10,9 +11,14 @@ import me.modernadventurer.lifesteal.polymer.LifestealResourcePackBuilder;
 import net.fabricmc.api.ModInitializer;
 
 
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.gamerule.v1.GameRuleBuilder;
+import net.minecraft.network.packet.s2c.play.OverlayMessageS2CPacket;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.rule.GameRule;
+import net.minecraft.world.rule.GameRules;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,6 +43,12 @@ import java.util.concurrent.ConcurrentHashMap;
 //NOTICE: This file was modified to remove all configuration setup and instead establish gamerules.
 
 public class Loader implements ModInitializer {
+
+    public static int timer = 0;
+    public static boolean running = false;
+    public static boolean paused = false;
+    public static int tickCounter = 0;
+    public static boolean pvpEnabled = false;
 
 	public static final String MOD_ID = "lifesteal";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
@@ -72,6 +84,9 @@ public class Loader implements ModInitializer {
     public static final GameRule<Integer> PENDINGHEARTSTIMEOUT = GameRuleBuilder.forInteger(120)
             .buildAndRegister(Identifier.of(MOD_ID, "pending_hearts_timeout"));
 
+    public static final GameRule<Integer> PVPTIMERTIME = GameRuleBuilder.forInteger(120)
+            .buildAndRegister(Identifier.of(MOD_ID, "pvp_timer_time"));
+
 	@Override
 	public void onInitialize() {
         LOGGER.info("LifeSteal Initializing");
@@ -88,5 +103,56 @@ public class Loader implements ModInitializer {
         CommandRegistry.register();
         LOGGER.info("Success registering commands!");
         LOGGER.info("Finished LifeSteal Init!");
+
+        ServerTickEvents.END_SERVER_TICK.register(server -> {
+            if (!Loader.running || Loader.paused) return;
+
+            Loader.tickCounter++;
+
+            if (Loader.tickCounter >= 20) { // 1 second
+                Loader.tickCounter = 0;
+                Loader.timer--;
+
+                for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
+
+                    if (Loader.timer > 0) {
+                        Loader.sendActionBar(player,
+                                "§ePvP enables in: " + formatTime(Loader.timer)
+                        );
+                    } else {
+                        Loader.sendActionBar(player, "§aPvP Enabled!");
+                        server.getSpawnWorld().getGameRules().setValue(GameRules.PVP, true, server);
+                    }
+                }
+
+                if (Loader.timer <= 0) {
+                    Loader.running = false;
+                    Loader.pvpEnabled = true;
+                }
+            }
+        });
+    }
+
+
+
+    public static void sendActionBar(ServerPlayerEntity player, String message) {
+        player.networkHandler.sendPacket(
+                new OverlayMessageS2CPacket(Text.literal(message))
+        );
+    }
+
+    private static String formatTime(long totalSeconds) {
+        long days = totalSeconds / 86400;
+        long hours = (totalSeconds % 86400) / 3600;
+        long minutes = (totalSeconds % 3600) / 60;
+        long seconds = totalSeconds % 60;
+
+        if (days > 0) {
+            return String.format("%dd %02dh %02dm %02ds", days, hours, minutes, seconds);
+        } else if (hours > 0) {
+            return String.format("%02dh %02dm %02ds", hours, minutes, seconds);
+        } else {
+            return String.format("%02dm %02ds", minutes, seconds);
+        }
     }
 }
