@@ -14,9 +14,9 @@ import java.util.Collection;
 public class RemoveHearts {
     public static int remove(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         Collection<ServerPlayerEntity> players = EntityArgumentType.getPlayers(ctx, "give_to_player");
-        int heartsAmount = IntegerArgumentType.getInteger(ctx, "amount_hearts") * -1;
+        int heartsAmount = IntegerArgumentType.getInteger(ctx, "heart_amount") * -1;
 
-        UpdateMaxHealth.update(players,-heartsAmount);
+        UpdateMaxHealth.update(players,heartsAmount);
 
         return Command.SINGLE_SUCCESS;
     }

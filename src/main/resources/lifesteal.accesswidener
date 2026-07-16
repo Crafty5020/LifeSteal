@@ -1,0 +1,17 @@
+accessWidener v2 named
+
+# Access the inner PieceData class so your Mixin can see the type
+accessible class net/minecraft/structure/StrongholdGenerator$PieceData
+
+# Access the ALL_PIECES array itself
+# Note: [L denotes an array, and the $ is for the inner class
+accessible field net/minecraft/structure/StrongholdGenerator ALL_PIECES [Lnet/minecraft/structure/StrongholdGenerator$PieceData;
+# Make the fields inside PieceData mutable so you can change them
+mutable field net/minecraft/structure/StrongholdGenerator$PieceData weight I
+mutable field net/minecraft/structure/StrongholdGenerator$PieceData limit I
+mutable field net/minecraft/structure/StrongholdGenerator possiblePieces Ljava/util/List;
+accessible field net/minecraft/structure/StrongholdGenerator$PieceData pieceType Ljava/lang/Class;
+# Change 'level' and 'beamSegments' in BeaconBlockEntity
+accessible field net/minecraft/block/entity/BeaconBlockEntity level I
+mutable field net/minecraft/block/entity/BeaconBlockEntity level I
+accessible field net/minecraft/block/entity/BeaconBlockEntity beamSegments Ljava/util/List;

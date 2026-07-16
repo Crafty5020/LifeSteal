@@ -1,6 +1,7 @@
 package me.modernadventurer.lifesteal;
 
 import me.modernadventurer.lifesteal.commands.CommandRegistry;
+import me.modernadventurer.lifesteal.events.LifestealEvents;
 import me.modernadventurer.lifesteal.items.Echo;
 import me.modernadventurer.lifesteal.items.ElderGardianSkin;
 import me.modernadventurer.lifesteal.items.WardenHorns;
@@ -12,10 +13,13 @@ import net.fabricmc.api.ModInitializer;
 
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.gamerule.v1.GameRuleBuilder;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.network.packet.s2c.play.OverlayMessageS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.rule.GameRule;
 import net.minecraft.world.rule.GameRules;
 import org.slf4j.Logger;
@@ -52,12 +56,16 @@ public class Loader implements ModInitializer {
 	public static final String MOD_ID = "lifesteal";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
-    public static ConcurrentHashMap<UUID, Long> BANNED_PLAYERS;
+    public static ConcurrentHashMap<UUID, Long> BANNED_PLAYERS = new ConcurrentHashMap<>();
 
     public static WardenHorns WARDENHORNS;
     public static ElderGardianSkin ELDERGUARDIANSKIN;
     public static Echo ECHO;
 
+    public static final GameRule<Integer> BEACONYOFFSET = GameRuleBuilder.forInteger(5)
+            .buildAndRegister(Identifier.of(MOD_ID,"beacon_y_offset"));
+    public static final GameRule<Integer> BEACONLEVEL = GameRuleBuilder.forInteger(1)
+            .buildAndRegister(Identifier.of(MOD_ID,"beacon_level"));
 
 	public static final GameRule<Boolean> PLAYERRELATEDONLY = GameRuleBuilder.forBoolean(false)
             .buildAndRegister(Identifier.of(MOD_ID, "player_kill_only"));
@@ -83,7 +91,7 @@ public class Loader implements ModInitializer {
     public static final GameRule<Integer> PENDINGHEARTSTIMEOUT = GameRuleBuilder.forInteger(120)
             .buildAndRegister(Identifier.of(MOD_ID, "pending_hearts_timeout"));
 
-    public static final GameRule<Integer> PVPTIMERTIME = GameRuleBuilder.forInteger(120)
+    public static final GameRule<Integer> PVPTIMERTIME = GameRuleBuilder.forInteger(300)
             .buildAndRegister(Identifier.of(MOD_ID, "pvp_timer_time"));
 
 	@Override
@@ -104,8 +112,14 @@ public class Loader implements ModInitializer {
         LOGGER.info("Finished LifeSteal Init!");
 
         ServerTickEvents.END_SERVER_TICK.register(server -> {
-            if (!Loader.running || Loader.paused) return;
 
+            for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
+
+                if (player.getEntityWorld().isClient()) continue;
+
+                LifestealEvents.onEyesDetected(player);
+            }
+            if (!Loader.running || Loader.paused) return;
             Loader.tickCounter++;
 
             if (Loader.tickCounter >= 20) { // 1 second
@@ -129,7 +143,9 @@ public class Loader implements ModInitializer {
                     Loader.pvpEnabled = true;
                 }
             }
+
         });
+
     }
 
 
@@ -153,5 +169,9 @@ public class Loader implements ModInitializer {
         } else {
             return String.format("%02dm %02ds", minutes, seconds);
         }
+    }
+
+    private static boolean isEye(ItemStack stack) {
+        return stack.getItem() == Items.ENDER_EYE;
     }
 }

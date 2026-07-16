@@ -14,7 +14,7 @@ import java.util.Collection;
 public class AddHearts {
     public static int Add(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         Collection<ServerPlayerEntity> players = EntityArgumentType.getPlayers(ctx, "give_to_player");
-        int heartsAmount = IntegerArgumentType.getInteger(ctx, "amount_hearts");
+        int heartsAmount = IntegerArgumentType.getInteger(ctx, "heart_amount");
 
         UpdateMaxHealth.update(players,heartsAmount);
 

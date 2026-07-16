@@ -5,13 +5,16 @@ import me.modernadventurer.lifesteal.commands.command.AddHearts;
 import me.modernadventurer.lifesteal.commands.command.GIveHearts.GiveHearts;
 import me.modernadventurer.lifesteal.commands.command.RemoveHearts;
 import me.modernadventurer.lifesteal.commands.command.pvpMode.pvp;
+import me.modernadventurer.lifesteal.data.GetMyWorldData;
+import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.permission.Permission;
 import me.modernadventurer.lifesteal.commands.command.GiveAllItems;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.command.permission.PermissionLevel;
 import net.minecraft.server.command.CommandManager;
-
+import net.minecraft.text.Text;
+import net.minecraft.util.math.BlockPos;
 
 
 public class CommandRegistry {
@@ -25,7 +28,7 @@ public class CommandRegistry {
                 )
                 .then(CommandManager.literal("add_hearts")
                         .requires(source -> source.getPermissions().hasPermission(new Permission.Level(PermissionLevel.GAMEMASTERS)))
-                        .then(CommandManager.argument("heart_amount", EntityArgumentType.players())
+                        .then(CommandManager.argument("heart_amount", IntegerArgumentType.integer())
                                 .then(CommandManager.argument("give_to_player", EntityArgumentType.players())
 
                                     .executes(AddHearts::Add)
@@ -35,7 +38,7 @@ public class CommandRegistry {
                 .then(CommandManager.literal("remove_hearts")
                         .requires(source -> source.getPermissions().hasPermission(new Permission.Level(PermissionLevel.GAMEMASTERS)))
                         .then(CommandManager.argument("give_to_player", EntityArgumentType.players())
-                                .then(CommandManager.argument("heart_amount", EntityArgumentType.players())
+                                .then(CommandManager.argument("heart_amount", IntegerArgumentType.integer())
 
                                     .executes(RemoveHearts::remove)
                                 )
@@ -43,7 +46,7 @@ public class CommandRegistry {
                 )
                 .then(CommandManager.literal("give_hearts")
                         .then(CommandManager.argument("give_to_player", EntityArgumentType.players())
-                                .then(CommandManager.argument("amount_hearts", IntegerArgumentType.integer(0))
+                                .then(CommandManager.argument("amount_hearts", IntegerArgumentType.integer())
                                         .executes(GiveHearts::give)
                                 )
                         )
@@ -74,6 +77,22 @@ public class CommandRegistry {
                                 )
                         )
                 )
-        ));
+                // Command to set the location (Works for Java & Bedrock/Geyser)
+                        .then(CommandManager.literal("setportal")
+                            .then(CommandManager.argument("pos", BlockPosArgumentType.blockPos())
+                                .executes(context -> {
+                                    BlockPos pos = BlockPosArgumentType.getBlockPos(context, "pos");
+
+                                    // Save this to the World's Persistent State (NBT)
+                                    // This stays in saves/world/data/my_mod_data.dat
+                                    GetMyWorldData.get(context.getSource().getWorld()).setPortalPos(pos);
+
+                                    context.getSource().sendFeedback(() -> Text.literal("Portal set at " + pos.toShortString()), true);
+                                    return 1;
+                                })
+                            )
+                        )
+            )
+        );
     }
 }

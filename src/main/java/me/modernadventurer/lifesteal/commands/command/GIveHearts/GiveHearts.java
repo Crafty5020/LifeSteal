@@ -19,7 +19,7 @@ public class GiveHearts {
     public static int give(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         ServerCommandSource source = ctx.getSource();
         Collection<ServerPlayerEntity> playersToSend = EntityArgumentType.getPlayers(ctx, "give_to_player");
-        int heartAmount = IntegerArgumentType.getInteger(ctx, "amount_hearts");
+        int heartAmount = IntegerArgumentType.getInteger(ctx, "heart_amount");
         UUID playerUUID = Objects.requireNonNull(source.getPlayer()).getUuid();
 
         StringBuilder names = new StringBuilder();
